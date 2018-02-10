@@ -68,7 +68,7 @@ def check_dt(val):
     try:            
         return datetime.strptime(val,"%m%d%Y")
     except:
-        return val
+        return False
     
 def check_zip(val):
     try:
@@ -84,7 +84,7 @@ def check_validity(val):
     
 def check_other_id(val):
     if val == "":
-        return val
+        return True
     else:
         return False
     
@@ -104,12 +104,13 @@ preprocess_map = {'TRANSACTION_DT':check_dt,
                   'OTHER_ID':check_other_id,
                   'TRANSACTION_AMT':check_amt}
 
-class dataStream(object):
-    def __init__(self,header,keepcols,preprocess_map):
+class DataStream(object):
+    def __init__(self,files,header,keepcols,preprocess_map):
         
         self.inputfiles = []        
-        self.outputfiles = []
-        for item in sys.argv:
+        self.outputfiles = []        
+        for item in files:
+#            print("processing argument {}".format(item))
             if "arg" in item:
                 item = os.environ[item]                
                 
@@ -123,7 +124,7 @@ class dataStream(object):
 #                    item = item.replace(toreplace,'')
                     
                 self.outputfile = item
-                print("output file is {} ".format(self.outputfile))
+#                print("output file is {} ".format(self.outputfile))
                 
         self.col_index = {col:header.index(col) for col in keepcols}
         self.preprocess_rules = preprocess_map
@@ -133,8 +134,9 @@ class dataStream(object):
         for file in self.inputfiles:
             with open(file,"r") as infile:
                 name = splitext(basename(file))[0]
-                print("setting attribute {} of read {}".format(name,file))
+#                print("setting attribute {} of read {}".format(name,file))
                 setattr(self,name,infile.read())
+                                
         self.percentile = int(self.percentile)
                 
         
@@ -166,8 +168,8 @@ class dataStream(object):
                 pass
                 
         
-class donationAnalytics(dataStream):
-    def __init__(self,header,keepcols,preprocess_map):
+class DonationAnalytics(DataStream):
+    def __init__(self,header,keepcols,preprocess_map, files = False):
         """
         output file columns:
             CMTE_ID
@@ -177,10 +179,9 @@ class donationAnalytics(dataStream):
             Sum of repeat contributions in this zip code this year
             number of repeat contributions in this zip code this year
         """
-        ds = dataStream(header, keepcols, preprocess_map)
-        self.stream =  ds.stream()
-        self.percentile = ds.percentile
-        self.outputfile = ds.outputfile
+        super().__init__(files,header,keepcols,preprocess_map)
+
+        self.stream =  self.stream()
         self.previous_donors = {}
         self.donations = {}
         self.outputrecords = []
@@ -236,32 +237,40 @@ class donationAnalytics(dataStream):
             return False            
         
     def process_data(self):
-        result = {}        
+        results = []
+        print("processing data to {}".format(self.outputfile))
         for row in self.stream:
-            result = self.process_row(row)
-#            print(result)
+            result = self.process_row(row)            
             if result:
                 with open(self.outputfile,'a') as out:                    
                     writeln = "|".join(result) + "\n"
-                    print("writing line " + writeln)
-                    out.write(writeln )
-#                    out.write("|".join(list(result.values())) + "\n" )
-                    
+#                    print("writing line " + writeln)
+                    results.append(writeln)
+                    out.write(writeln)
+        return results
                     
 if __name__ == "__main__":    
-    check = donationAnalytics(header, keepcols, preprocess_map)
-    check.process_data()
-
-
-
-
-
-
+    files = sys.argv[1:]
+    check = DonationAnalytics(header, keepcols, preprocess_map,files)
+    check.process_data() 
+    
+#    
+#print(check.itcont.split('\n')[2])
 #
-#for x in check.stream:
-#    print(x)
-#        
-#round(1.4)
-test = '/home/joe/repos/donation-analytics/insight_testsuite/temp/output/repeat_donors.txt'
-
-check = test.replace("insight_testsuite/temp/","")
+#
+##    check.process_data()
+##
+##
+##
+##
+##
+##
+##
+###
+###for x in check.stream:
+###    print(x)
+###        
+###round(1.4)
+##test = '/home/joe/repos/donation-analytics/insight_testsuite/temp/output/repeat_donors.txt'
+##
+##check = test.replace("insight_testsuite/temp/","")
