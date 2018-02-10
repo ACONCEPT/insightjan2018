@@ -10,7 +10,11 @@ echo $PWD
 runas=${1:-executable}
 #runas=${1:-script}
 environment=${2:-env/bin/activate}
- 
+
+CALLER=$(ps ax | grep "^ *$PPID" | awk '{print $NF}')
+#d $(dirname ${0})
+cd $(dirname $CALLER)
+
 ## to install dependent bash tools
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt-get update -yq
@@ -21,13 +25,10 @@ export arg1=$(realpath input/itcont.txt)
 export arg2=$(realpath input/percentile.txt)
 export arg3=$(realpath output/repeat_donors.txt)
 
-if [ $runas = script ]; then	
-	##to run as script from vi@rtualenv use this commad
-	echo 'running program as script from env'
-	script=${3:-src/run.py}
-
+install_environment () {
+	
 	sudo apt-get install -yq python3.6 python3-pip
-
+	
 	if [ $(command -v virtualenv) = "" ]; then
 		echo 'installing virtulenv '$(command -v virtualenv)
 		pip3 install virtualenv
@@ -37,12 +38,19 @@ if [ $runas = script ]; then
 		echo 'creating virutal env '$(-d env/)
 		python3 -m virtualenv env
 	fi
-
+	
 	echo 'activating environment '${environment}
 	source $environment
+	
+}
 
+if [ $runas = script ]; then	
+	##to run as script from vi@rtualenv use this commad
+
+	install_environment
+
+	script=${3:-src/run.py}
 	echo 'calling script '${script}
-
 	python $script $arg1 $arg2 $arg3 
 fi
 
@@ -51,4 +59,13 @@ if [ $runas = executable ]; then
 	exec=${3:-src/run}
 	echo 'executing executable '${exec}
 	$exec $arg1 $arg2 $arg3 
+fi
+
+
+if [ $runas = unit_tests ]; then
+	##to run the unit tests, use this command 
+
+	install_environment
+	script=${3:-src/unit_tests.py}
+	python $script
 fi

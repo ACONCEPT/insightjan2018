@@ -10,7 +10,11 @@ echo $PWD
 runas=${1:-executable}
 #runas=${1:-script}
 environment=${2:-env/bin/activate}
- 
+
+CALLER=$(ps ax | grep "^ *$PPID" | awk '{print $NF}')
+#d $(dirname ${0})
+cd $(dirname $CALLER)
+
 ## to install dependent bash tools
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt-get update -yq

@@ -256,24 +256,3 @@ if __name__ == "__main__":
     files = sys.argv[1:]
     check = DonationAnalytics(header, keepcols, preprocess_map,files)
     check.process_data() 
-    
-#    
-#print(check.itcont.split('\n')[2])
-#
-#
-##    check.process_data()
-##
-##
-##
-##
-##
-##
-##
-###
-###for x in check.stream:
-###    print(x)
-###        
-###round(1.4)
-##test = '/home/joe/repos/donation-analytics/insight_testsuite/temp/output/repeat_donors.txt'
-##
-##check = test.replace("insight_testsuite/temp/","")

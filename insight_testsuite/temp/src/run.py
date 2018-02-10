@@ -136,10 +136,13 @@ class DataStream(object):
                 name = splitext(basename(file))[0]
 #                print("setting attribute {} of read {}".format(name,file))
                 setattr(self,name,infile.read())
-                                
+        if not hasattr(self,'percentile'):
+            raise AttributeError("must be an input file must be named percentile.txt")
+            
+        if not hasattr(self,'itcont'):
+            raise AttributeError("must be an input file must be named itcont.txt")
+            
         self.percentile = int(self.percentile)
-                
-        
                 
     def preprocess(self,record):
         record = record.split("|")
@@ -253,24 +256,3 @@ if __name__ == "__main__":
     files = sys.argv[1:]
     check = DonationAnalytics(header, keepcols, preprocess_map,files)
     check.process_data() 
-    
-#    
-#print(check.itcont.split('\n')[2])
-#
-#
-##    check.process_data()
-##
-##
-##
-##
-##
-##
-##
-###
-###for x in check.stream:
-###    print(x)
-###        
-###round(1.4)
-##test = '/home/joe/repos/donation-analytics/insight_testsuite/temp/output/repeat_donors.txt'
-##
-##check = test.replace("insight_testsuite/temp/","")
