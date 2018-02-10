@@ -136,10 +136,13 @@ class DataStream(object):
                 name = splitext(basename(file))[0]
 #                print("setting attribute {} of read {}".format(name,file))
                 setattr(self,name,infile.read())
-                                
+        if not hasattr(self,'percentile'):
+            raise AttributeError("must be an input file must be named percentile.txt")
+            
+        if not hasattr(self,'itcont'):
+            raise AttributeError("must be an input file must be named itcont.txt")
+            
         self.percentile = int(self.percentile)
-                
-        
                 
     def preprocess(self,record):
         record = record.split("|")

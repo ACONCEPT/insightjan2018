@@ -20,10 +20,7 @@ data_file = "itcont.txt"
 percentile_file = "percentile.txt"
 output_file = "duplicate_donors.txt"
 inputroot = "../input/unit_test/"
-outputroot = "../output/unit_test/"        
-
-
-
+outputroot = "../output/unit_test/"
 
 def set_up(fnd,fnp,output_file, inputroot,outputroot ):    
     os.makedirs(inputroot, exist_ok = True)    
@@ -71,8 +68,6 @@ class TestFunctions(unittest.TestCase):
         of the test data and calculation of the output means that this test
         validates every piece of the class
         """
-
-
         files = set_up(data_file,percentile_file,output_file, inputroot,outputroot)        
         
         self.ds = DonationAnalytics(keepcols, keepcols, preprocess_map, files)
