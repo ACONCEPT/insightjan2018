@@ -1,6 +1,6 @@
 # How to Run
 1. clone the repository, 
-2. run run.sh or insight_testsuite/run_tests.sh
+2. run run.sh or insight_testsuite/run_tests.sh you have to cd into insight_testsuite to run the tests doesn't work to call it from somewhere else 
 
 all necessary dependency installation and setup should be automatic on an ubuntu 16.04 system
 
